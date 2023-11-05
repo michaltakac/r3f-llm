@@ -1,0 +1,46 @@
+{
+  "name": "r3f-llm-frontend",
+  "private": true,
+  "version": "0.0.1",
+  "authors": [
+    "Michal Takáč <https://twitter.com/michaltakac>"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0 --fix",
+    "preview": "vite preview"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "@mobily/ts-belt": "^3.13.1",
+    "@react-spring/web": "^9.7.3",
+    "@react-three/drei": "^9.88.7",
+    "@react-three/fiber": "^8.15.8",
+    "@react-three/flex": "^1.0.1",
+    "lodash-es": "^4.17.21",
+    "maath": "^0.10.4",
+    "mathjs": "^12.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.11",
+    "three": "^0.158.0",
+    "three-stdlib": "^2.28.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "vite": "^4.4.5"
+  }
+}

@@ -1,0 +1,16 @@
+# API Server
+fastapi
+uvicorn[standard]
+pydantic[email]
+pydantic-settings
+
+# AI
+pyautogen
+langchain
+openai
+outlines
+
+# Development
+pip-tools
+black
+flake8
