@@ -5,10 +5,12 @@ pydantic[email]
 pydantic-settings
 
 # AI
-pyautogen
 langchain
-openai
+openai==1.0.1
 outlines
+
+#misc
+python-dotenv
 
 # Development
 pip-tools

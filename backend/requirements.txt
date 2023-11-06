@@ -5,9 +5,7 @@
 #    pip-compile requirements.in
 #
 aiohttp==3.8.6
-    # via
-    #   langchain
-    #   openai
+    # via langchain
 aiosignal==1.3.1
     # via aiohttp
 annotated-types==0.6.0
@@ -15,7 +13,9 @@ annotated-types==0.6.0
 anyio==3.7.1
     # via
     #   fastapi
+    #   httpx
     #   langchain
+    #   openai
     #   starlette
     #   watchfiles
 asttokens==2.4.1
@@ -33,7 +33,10 @@ black==23.10.1
 build==1.0.3
     # via pip-tools
 certifi==2023.7.22
-    # via requests
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
 charset-normalizer==3.3.2
     # via
     #   aiohttp
@@ -47,22 +50,20 @@ cloudpickle==3.0.0
     # via perscache
 dataclasses-json==0.6.1
     # via langchain
-diskcache==5.6.3
-    # via pyautogen
+distro==1.8.0
+    # via openai
 dnspython==2.4.2
     # via email-validator
 email-validator==2.1.0.post1
     # via pydantic
 exceptiongroup==1.1.3
     # via anyio
-fastapi==0.104.0
+fastapi==0.104.1
     # via -r requirements.in
 filelock==3.13.1
     # via torch
 flake8==6.1.0
     # via -r requirements.in
-flaml==2.1.1
-    # via pyautogen
 frozenlist==1.4.0
     # via
     #   aiohttp
@@ -70,15 +71,22 @@ frozenlist==1.4.0
 fsspec==2023.10.0
     # via torch
 h11==0.14.0
-    # via uvicorn
+    # via
+    #   httpcore
+    #   uvicorn
+httpcore==1.0.1
+    # via httpx
 httptools==0.6.1
     # via uvicorn
-icontract==2.6.4
+httpx==0.25.1
+    # via openai
+icontract==2.6.5
     # via perscache
 idna==3.4
     # via
     #   anyio
     #   email-validator
+    #   httpx
     #   requests
     #   yarl
 importlib-metadata==6.8.0
@@ -97,9 +105,9 @@ jsonpatch==1.33
     # via langchain
 jsonpointer==2.4
     # via jsonpatch
-langchain==0.0.330
+langchain==0.0.331
     # via -r requirements.in
-langsmith==0.0.57
+langsmith==0.0.58
     # via langchain
 lark==1.1.8
     # via outlines
@@ -127,15 +135,12 @@ numba==0.58.1
     # via outlines
 numpy==1.24.4
     # via
-    #   flaml
     #   langchain
     #   numba
     #   outlines
     #   scipy
-openai==0.28.1
-    # via
-    #   -r requirements.in
-    #   pyautogen
+openai==1.0.1
+    # via -r requirements.in
 outlines==0.0.9
     # via -r requirements.in
 packaging==23.2
@@ -153,8 +158,6 @@ pip-tools==7.3.0
     # via -r requirements.in
 platformdirs==3.11.0
     # via black
-pyautogen==0.1.14
-    # via -r requirements.in
 pycodestyle==2.11.1
     # via flake8
 pydantic[email]==2.4.2
@@ -163,6 +166,7 @@ pydantic[email]==2.4.2
     #   fastapi
     #   langchain
     #   langsmith
+    #   openai
     #   outlines
     #   pydantic-settings
 pydantic-core==2.10.1
@@ -175,7 +179,7 @@ pyproject-hooks==1.0.0
     # via build
 python-dotenv==1.0.0
     # via
-    #   pyautogen
+    #   -r requirements.in
     #   pydantic-settings
     #   uvicorn
 pyyaml==6.0.1
@@ -186,13 +190,14 @@ requests==2.31.0
     # via
     #   langchain
     #   langsmith
-    #   openai
 scipy==1.10.1
     # via outlines
 six==1.16.0
     # via asttokens
 sniffio==1.3.0
-    # via anyio
+    # via
+    #   anyio
+    #   httpx
 sqlalchemy==2.0.23
     # via langchain
 starlette==0.27.0
@@ -203,8 +208,6 @@ tenacity==8.2.3
     # via
     #   langchain
     #   outlines
-termcolor==2.3.0
-    # via pyautogen
 tomli==2.0.1
     # via
     #   black
@@ -221,6 +224,7 @@ typing-extensions==4.8.0
     #   black
     #   fastapi
     #   icontract
+    #   openai
     #   pydantic
     #   pydantic-core
     #   sqlalchemy
@@ -232,7 +236,7 @@ typing-inspect==0.9.0
     # via dataclasses-json
 urllib3==2.0.7
     # via requests
-uvicorn[standard]==0.23.2
+uvicorn[standard]==0.24.0.post1
     # via -r requirements.in
 uvloop==0.19.0
     # via uvicorn
@@ -240,7 +244,7 @@ watchfiles==0.21.0
     # via uvicorn
 websockets==12.0
     # via uvicorn
-wheel==0.41.2
+wheel==0.41.3
     # via pip-tools
 yarl==1.9.2
     # via aiohttp

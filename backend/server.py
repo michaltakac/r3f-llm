@@ -4,13 +4,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Union
 from pydantic import BaseModel
 import uvicorn
-import openai
+from openai import OpenAI
 import re
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Put your URI end point:port here for your local inference server (in LM Studio)
-openai.api_base = 'http://localhost:1234/v1'
+# openai.api_base = 'http://localhost:1234/v1'
 # Put in an empty API Key
-openai.api_key = ''
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    organization=os.environ.get("OPENAI_ORG_ID")
+)
+# openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 
 def get_completion(options):
@@ -21,14 +28,15 @@ def get_completion(options):
         {"role": "user", "content": formatted_user_prompt}
     ]
     print(f'\nYour prompt: {formatted_user_prompt}\n')
-    response = openai.ChatCompletion.create(
-        model="local model",
+    response = client.chat.completions.create(
+        model="gpt-4-0613",
         messages=messages,
         temperature=options.temperature,
         max_tokens=options.max_tokens,
         stream=options.stream,
     )
-    return response.choices[0].message["content"]
+    print(response)
+    return response.choices[0].message.content
 
 
 app = FastAPI()

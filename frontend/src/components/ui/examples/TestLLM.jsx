@@ -4,7 +4,7 @@ import * as R3FDrei from "@react-three/drei";
 
 export function TestLLM() {
   const [inputValue, setInputValue] = useState(
-    "Create 3D box from react-three/drei component that is positioned to 4, 1, -8, \nrotated 45 degrees to the left, and material-color property is set to red.",
+    "Create 25 random types of 3D primitives from react-three/drei component that will be positioned within 10x10x10 range in 3D, \n every with different color, with their rotation animated on every frame.",
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedResult, setGeneratedResult] = useState("");
@@ -23,7 +23,8 @@ export function TestLLM() {
         system_prompt: `Below is an instruction that describes a code generation task. Write a response that appropriately completes the request in the format of cleaned and trimmed React component, without any additional explanation or any text beside the code block. Code in the response will be integrated into existing component that is imported into @react-three/fiber app. Leverage components from '@react-three/drei' and include 'import * as THREE from "three";' at the beginning of the code. Don't include any textual explanation or 'Here's the JSX code that completes your request' in the response beside the code. Component should be exported as a named export and the component name is 'AIComponent'`,
         user_prompt: inputValue,
         temperature: 0.2,
-        max_tokens: -1,
+        max_tokens: 2048,
+        // max_tokens: -1,
         stream: false,
       };
       console.log(data);
