@@ -15,9 +15,9 @@ python server.py
 In another terminal window, install frontend deps and start client app
 
 ```bash
-cd backend
-pip install -r requirements.txt
-python server.py
+cd frontend
+npm install
+npm run dev
 ```
 
 Now you can navigate to http://localhost:5137
