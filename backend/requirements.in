@@ -8,6 +8,7 @@ pydantic-settings
 langchain
 openai==1.0.1
 outlines
+openai-whisper
 
 #misc
 python-dotenv

@@ -5,6 +5,7 @@ from typing import List, Dict, Union
 from pydantic import BaseModel
 import uvicorn
 from openai import OpenAI
+import whisper
 import re
 from dotenv import load_dotenv
 
@@ -42,6 +43,7 @@ app = FastAPI()
 
 origins = [
     os.getenv("FRONTEND_URL", "http://localhost:5173"),
+    "http://localhost:3000"
 ]
 
 app.add_middleware(
@@ -59,6 +61,17 @@ class PromptRequest(BaseModel):
     temperature: Union[int, float] = 0.0
     max_tokens: Union[int, float] = -1
     stream: bool = False
+
+class AudioRequest(BaseModel):
+    file: str
+    model: str = "base"
+
+@app.post("/transcribe-audio")
+def transcribe_audio(request_body: PromptRequest):
+    whisper_model = whisper.load_model(request_body.model)
+    result = whisper_model.transcribe(request_body.file)
+    print(result["text"])
+    return {"status": "success", "detail": str(result["text"])}
 
 
 @app.post("/generate-code/{component_name}")

@@ -3,35 +3,36 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { ErrorBoundary } from "react-error-boundary";
 import { AIComponent } from "./components/AIComponent";
-import { useLoader } from '@react-three/fiber'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useLoader } from "@react-three/fiber";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { TestLLM } from "./components/ui/examples/TestLLM";
+import { useStore } from "./store";
 
 import "./App.css";
+import { TranscriptButtons } from "./components/ui/examples/TranscriptButtons";
 
 function App() {
-  const [inputValue, setInputValue] = useState(
-    "Create 25 3D primitives from react-three/drei component with random type of either Box, Sphere, Torus, Cylinder, Cone, Ring, Tetrahedron, Octahedron, or Dodecahedron, that will be positioned within 10x10x10 range in 3D, every one with different color, with their rotation animated on every frame.",
-  );
+  const setPromptText = useStore((state) => state.setPromptText);
+  const promptText = useStore((state) => state.prompt);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedResult, setGeneratedResult] = useState("");
 
-  const sanda3DModel = useLoader(GLTFLoader, '/gangster-santa.glb')
+  const sanda3DModel = useLoader(GLTFLoader, "/gangster-santa.glb");
 
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+    setPromptText(e.target.value);
   };
 
   const handleSend = (e) => {
     e.preventDefault();
     setIsGenerating(true);
-    if (inputValue.trim() !== "") {
+    if (promptText.trim() !== "") {
       // Replace with your server's API endpoint and key
       const API_ENDPOINT = "http://localhost:8000/generate-code/AIComponent";
 
       const data = {
         system_prompt: `Below is an instruction that describes a code generation task. Write a response that appropriately completes the request in the format of cleaned and trimmed React component, without any additional explanation or any text beside the code block. Code in the response will be integrated into existing component that is imported into @react-three/fiber app. Leverage components from '@react-three/drei' and include 'import * as THREE from "three";' at the beginning of the code. Don't include any textual explanation or 'Here's the JSX code that completes your request' in the response beside the code. Component should be exported as a named export and the component name is 'AIComponent'`,
-        user_prompt: inputValue,
+        user_prompt: promptText,
         temperature: 0.2,
         max_tokens: 2048,
         // max_tokens: -1,
@@ -69,17 +70,23 @@ function App() {
 
   return (
     <>
-      <div className="mx-auto mt-5 flex flex-col flex-wrap items-center md:flex-row md:w-2/3 sm:w-full">
-        <div className="flex w-full flex-col items-start justify-center text-center md:w-2/5 md:text-left">
-          <h1 className="my-4 text-5xl font-bold leading-tight">
+      <div className="mx-auto mt-5 items-center w-full container">
+        <div className="w-full items-start justify-center text-center text-left">
+          <h1 className="my-4 text-2xl font-bold leading-tight">
             React-three-fiber + LLMs + LM Studio
           </h1>
-          <p className="mb-8 text-2xl leading-normal">A playground for generative 3D on the web.</p>
+          <p className="mb-8 text-xl leading-normal">A playground for generative 3D on the web.</p>
         </div>
       </div>
 
-      <div>
-        <form className="w-full" style={{width: "700px"}} onSubmit={handleSend}>
+      <div className="w-full" style={{ width: "900px" }}>
+        <div className="md:flex md:items-center">
+          <div className="md:w-1/3"></div>
+          <div className="md:w-2/3">
+            <TranscriptButtons />
+          </div>
+        </div>
+        <form onSubmit={handleSend}>
           <div className="md:flex md:items-center mb-6">
             <div className="md:w-1/3">
               <label
@@ -89,12 +96,13 @@ function App() {
                 Prompt
               </label>
             </div>
-            <div style={{width: "500px"}}>
+            <div style={{ width: "700px" }}>
               <textarea
+                rows={5}
                 className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                 id="inline-full-name"
                 type="text"
-                value={inputValue}
+                value={promptText}
                 onChange={handleInputChange}
               />
             </div>
@@ -103,10 +111,10 @@ function App() {
             <div className="md:w-1/3"></div>
             <div className="md:w-2/3">
               <button
-                className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                className="shadow bg-green-500 hover:bg-green-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 mr-1 rounded"
                 type="submit"
               >
-                {isGenerating ? "Generating..." : "Send"}
+                {isGenerating ? "Generating..." : "Generate 3D objects"}
               </button>
             </div>
           </div>
