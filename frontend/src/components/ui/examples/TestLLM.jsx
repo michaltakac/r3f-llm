@@ -4,7 +4,7 @@ import * as R3FDrei from "@react-three/drei";
 
 export function TestLLM() {
   const [inputValue, setInputValue] = useState(
-    "Create 25 random types of 3D primitives from react-three/drei component that will be positioned within 10x10x10 range in 3D, \n every with different color, with their rotation animated on every frame.",
+    "Create 25 3D primitives from react-three/drei component with random type of either Box, Sphere, Torus, Cylinder, Cone, Ring, Tetrahedron, Octahedron, or Dodecahedron, that will be positioned within 10x10x10 range in 3D, every one with different color, with their rotation animated on every frame.",
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedResult, setGeneratedResult] = useState("");

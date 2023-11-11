@@ -14,11 +14,10 @@ load_dotenv()
 # openai.api_base = 'http://localhost:1234/v1'
 # Put in an empty API Key
 client = OpenAI(
+    organization=os.environ.get("OPENAI_ORG_ID"),
     api_key=os.environ.get("OPENAI_API_KEY"),
-    organization=os.environ.get("OPENAI_ORG_ID")
 )
 # openai.api_key = os.environ.get("OPENAI_API_KEY")
-
 
 def get_completion(options):
     formatted_system_prompt = f"{options.system_prompt}"
@@ -29,7 +28,7 @@ def get_completion(options):
     ]
     print(f'\nYour prompt: {formatted_user_prompt}\n')
     response = client.chat.completions.create(
-        model="gpt-4-0613",
+        model="gpt-4-1106-preview",
         messages=messages,
         temperature=options.temperature,
         max_tokens=options.max_tokens,
