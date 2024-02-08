@@ -1,11 +1,13 @@
 import os
+from pathlib import Path
+import base64
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Union
 from pydantic import BaseModel
 import uvicorn
 from openai import OpenAI
-import whisper
+from faster_whisper import WhisperModel
 import re
 from dotenv import load_dotenv
 
@@ -19,6 +21,8 @@ client = OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
 # openai.api_key = os.environ.get("OPENAI_API_KEY")
+
+model = WhisperModel("small.en", device="cpu", compute_type="int8")
 
 def get_completion(options):
     formatted_system_prompt = f"{options.system_prompt}"
@@ -55,23 +59,29 @@ app.add_middleware(
 )
 
 
+class AudioRequest(BaseModel):
+    file: str
+    model: str = "base"
+
+
+@app.post("/transcribe-audio")
+def transcribe_audio(request_body: AudioRequest):
+    path_string = "temp.wav"
+    p = Path(path_string)
+    decode_string = base64.b64decode(request_body.file)
+    p.write_bytes(decode_string)
+    segments, _ = model.transcribe(path_string, vad_filter=True)
+    transcription = "".join(segment.text for segment in segments).strip()
+    print(transcription)
+    p.unlink(missing_ok=True)
+    return {"status": "success", "text": str(transcription)}
+
 class PromptRequest(BaseModel):
     system_prompt: str
     user_prompt: str
     temperature: Union[int, float] = 0.0
     max_tokens: Union[int, float] = -1
     stream: bool = False
-
-class AudioRequest(BaseModel):
-    file: str
-    model: str = "base"
-
-@app.post("/transcribe-audio")
-def transcribe_audio(request_body: PromptRequest):
-    whisper_model = whisper.load_model(request_body.model)
-    result = whisper_model.transcribe(request_body.file)
-    print(result["text"])
-    return {"status": "success", "detail": str(result["text"])}
 
 
 @app.post("/generate-code/{component_name}")
@@ -109,7 +119,6 @@ def generate_code(component_name: str, request_body: PromptRequest):
 if __name__ == "__main__":
     uvicorn.run(
         "server:app",
-        host="0.0.0.0",
         reload=True,
         port=8000,
     )

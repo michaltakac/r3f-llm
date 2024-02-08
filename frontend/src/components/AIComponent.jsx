@@ -1,30 +1,52 @@
 
 import * as THREE from "three";
-import { Box } from '@react-three/drei';
+import { useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import { Box, Sphere, Torus, Cylinder, Cone, Ring, Octahedron, Dodecahedron } from "@react-three/drei";
+
+const primitives = [Box, Sphere, Torus, Cylinder, Cone, Ring, Octahedron, Dodecahedron];
 
 export const AIComponent = () => {
-  const size = 1; // Size of each block
-  const numBlocks = 10; // Number of blocks in each direction
+  const meshRefs = useRef([]);
+  meshRefs.current = [];
 
-  // Generate a grid of blocks to simulate a Minecraft world
-  const blocks = [];
-  for (let x = 0; x < numBlocks; x++) {
-    for (let z = 0; z < numBlocks; z++) {
-      // Randomize the height of each column of blocks
-      const height = Math.ceil(Math.random() * 5);
-      for (let y = 0; y < height; y++) {
-        blocks.push({ position: [x * size, y * size, z * size] });
-      }
-    }
-  }
+  const getRandomPrimitive = () => {
+    const randomIndex = Math.floor(Math.random() * primitives.length);
+    return primitives[randomIndex];
+  };
+
+  const getRandomPosition = () => ({
+    position: [THREE.MathUtils.randFloatSpread(10), THREE.MathUtils.randFloatSpread(10), THREE.MathUtils.randFloatSpread(10)],
+  });
+
+  const getRandomColor = () => {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  };
+
+  useFrame(() => {
+    meshRefs.current.forEach((mesh) => {
+      mesh.rotation.x += 0.01;
+      mesh.rotation.y += 0.01;
+    });
+  });
 
   return (
     <>
-      {blocks.map((block, index) => (
-        <Box key={index} args={[size, size, size]} position={block.position}>
-          <meshStandardMaterial attach="material" color="green" />
-        </Box>
-      ))}
+      {Array.from({ length: 25 }).map((_, index) => {
+        const Primitive = getRandomPrimitive();
+        const { position } = getRandomPosition();
+        const color = getRandomColor();
+
+        return (
+          <Primitive
+            key={index}
+            ref={(el) => (meshRefs.current[index] = el)}
+            position={position}
+            args={[1, 1, 1]}
+            material={new THREE.MeshStandardMaterial({ color })}
+          />
+        );
+      })}
     </>
   );
 };

@@ -7,6 +7,9 @@
   ],
   "dependencies": {
     "@chengsokdara/use-whisper": "^0.2.0",
+    "@coconut-xr/apfel-kruemel": "^0.0.6",
+    "@coconut-xr/lucide-koestlich": "^0.0.3",
+    "@coconut-xr/natuerlich": "^0.0.47",
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.0",
     "@mobily/ts-belt": "^3.13.1",

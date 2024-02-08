@@ -1,12 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { useStore } from "../../../store";
 
 export function TranscriptButtons() {
+  const [transcribing, setTranscribing] = useState(false);
+  const prompt = useStore((state) => state.prompt);
   const setPromptText = useStore((state) => state.setPromptText);
+  const setAudioRecordingInfo = useStore((state) => state.setAudioRecordingInfo);
+  const audioRecordingInfo = useStore((state) => state.audioRecordingInfo);
 
   const onTranscribe = async (blob) => {
-    console.log("transcribing");
+    // setAudioRecordingInfo("Transcribing...");
+    setTranscribing(true);
     const base64 = await new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result);
@@ -20,42 +25,55 @@ export function TranscriptButtons() {
       headers,
       body,
     });
-    const { text } = await response.data;
-    // you must return result from your server in Transcript format
-    return {
-      blob,
-      text,
-    };
+    try {
+      const { text } = await response.json();
+      setAudioRecordingInfo("");
+      setTranscribing(false);
+
+      if (text) {
+        setPromptText(prompt + (prompt ? `\n${text}` : `${text}`));
+      }
+
+      return {
+        blob,
+        text,
+      };
+    } catch (e) {
+      console.log(e)
+      setAudioRecordingInfo("");
+      setTranscribing(false);
+
+      return {
+        blob,
+        text: "",
+      };
+    }
   };
 
-  const {
-    transcript,
-    pauseRecording,
-    startRecording,
-    stopRecording,
-  } = useWhisper({
-    apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+  const { recording, pauseRecording, startRecording, stopRecording } = useWhisper({
+    // apiKey: process.env.REACT_APP_OPENAI_API_KEY,
     mode: "transcriptions",
-    streaming: true,
-    timeSlice: 1_000, // 1 second
+    // streaming: true,
+    // timeSlice: 1_000, // 1 second
     removeSilence: true,
-    whisperConfig: {
-      language: "en",
-    },
+    onTranscribe,
   });
 
   useEffect(() => {
-    if (transcript.text) {
-      setPromptText(transcript.text);
+    if (recording) {
+      setAudioRecordingInfo("Text will be transcribed after recording is stopped...");
+    } else {
+      setAudioRecordingInfo("");
     }
-  }, [transcript.text]);
+  }, [recording]);
   return (
     <>
       <button
         onClick={() => startRecording()}
+        disabled={recording || transcribing}
         className="shadow bg-red-500 hover:bg-red-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 mr-1 rounded"
       >
-        Start transcribing audio
+        {recording ? "Recording..." : transcribing ? "Transcribing..." : "Start transcribing audio"}
       </button>
       <button
         onClick={() => pauseRecording()}
@@ -69,6 +87,7 @@ export function TranscriptButtons() {
       >
         Stop
       </button>
+      <div>{audioRecordingInfo}</div>
     </>
   );
 }

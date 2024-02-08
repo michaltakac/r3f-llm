@@ -1,21 +1,43 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { ErrorBoundary } from "react-error-boundary";
 import { AIComponent } from "./components/AIComponent";
 import { useLoader } from "@react-three/fiber";
+import {
+  ImmersiveSessionOrigin,
+  NonImmersiveCamera,
+  SessionSupportedGuard,
+  useEnterXR,
+  useHeighestAvailableFrameRate,
+  useNativeFramebufferScaling,
+} from "@coconut-xr/natuerlich/react";
+import { XRCanvas, Hands, Controllers, Grabbable } from "@coconut-xr/natuerlich/defaults";
+import { RootContainer } from "@coconut-xr/koestlich";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { TestLLM } from "./components/ui/examples/TestLLM";
 import { useStore } from "./store";
 
 import "./App.css";
 import { TranscriptButtons } from "./components/ui/examples/TranscriptButtons";
+import { LLMInputXR } from "./components/ui/examples/LLMInputXR";
+
+const sessionOptions = {
+  requiredFeatures: ["local-floor"],
+  optionalFeatures: ["hand-tracking"],
+};
 
 function App() {
   const setPromptText = useStore((state) => state.setPromptText);
   const promptText = useStore((state) => state.prompt);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedResult, setGeneratedResult] = useState("");
+
+  const enterAR = useEnterXR("immersive-ar", sessionOptions);
+  const enterVR = useEnterXR("immersive-vr", sessionOptions);
+
+  const frameBufferScaling = useNativeFramebufferScaling();
+  const heighestAvailableFramerate = useHeighestAvailableFrameRate();
 
   const sanda3DModel = useLoader(GLTFLoader, "/gangster-santa.glb");
 
@@ -73,7 +95,7 @@ function App() {
       <div className="mx-auto mt-5 items-center w-full container">
         <div className="w-full items-start justify-center text-center text-left">
           <h1 className="my-4 text-2xl font-bold leading-tight">
-            React-three-fiber + LLMs + LM Studio
+            LLMs + React-three-fiber + WebXR
           </h1>
           <p className="mb-8 text-xl leading-normal">A playground for generative 3D on the web.</p>
         </div>
@@ -121,8 +143,38 @@ function App() {
         </form>
       </div>
 
+      <div className="w-full mt-4" style={{ width: "900px" }}>
+        <div className="md:flex md:items-center">
+          <div className="md:w-1/3"></div>
+          <div className="md:w-2/3">
+            <SessionSupportedGuard mode="immersive-ar">
+              <button
+                className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 mr-1 rounded"
+                onClick={enterAR}
+              >
+                Enter AR
+              </button>
+            </SessionSupportedGuard>
+            <SessionSupportedGuard mode="immersive-vr">
+              <button
+                className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 mr-1 rounded"
+                onClick={enterVR}
+              >
+                Enter VR
+              </button>
+            </SessionSupportedGuard>
+          </div>
+        </div>
+      </div>
+
       <div className="my-0 w-full py-6 md:mb-40" style={{ width: "100%", height: "800px" }}>
-        <Canvas>
+        <XRCanvas
+          dpr={window.devicePixelRatio}
+          gl={{ localClippingEnabled: true }}
+          frameBufferScaling={frameBufferScaling}
+          frameRate={heighestAvailableFramerate}
+          style={{ inset: 0 }}
+        >
           <directionalLight position={[-2, 2, 2]} intensity={1.6} />
           <PerspectiveCamera position={[0, 1.5, 0]} />
           <Environment background preset="dawn" blur={0.8} />
@@ -131,16 +183,37 @@ function App() {
           <pointLight position={[-10, -10, -10]} color="blue" />
           <OrbitControls />
 
-          <primitive object={sanda3DModel.scene} />
+          <Grabbable>
+            <primitive object={sanda3DModel.scene} />
+          </Grabbable>
 
           {/* Simple UI for interacting with the backend */}
           {/* <TestLLM /> */}
+          <Grabbable>
+          <RootContainer
+          position={[-1.5, 1.5, -0]}
+          rotation={[0, Math.PI / 6, 0]}
+          pixelSize={0.003}
+          anchorX="center"
+          anchorY="center"
+          precision={0.01}
+        >
+          <Suspense>
+          <LLMInputXR />
+          </Suspense>
+        </RootContainer>
+        </Grabbable>
 
           {/* AI-generated stuff */}
           <ErrorBoundary fallback={<group />} onError={logError}>
-            <AIComponent generatedResult={generatedResult} />
+            <Grabbable>
+              <AIComponent generatedResult={generatedResult} />
+            </Grabbable>
           </ErrorBoundary>
-        </Canvas>
+
+          <Hands type="pointer" />
+          <Controllers />
+        </XRCanvas>
       </div>
     </>
   );
